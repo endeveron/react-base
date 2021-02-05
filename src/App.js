@@ -1,32 +1,31 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 
-import Loader from './shared/components/Loader/Loader'
+import Loader from './components/Loader/Loader'
 import Table from './components/Table/Table'
 import Details from './components/Details/Details'
+import ModeSelector from './components/ModeSelector/ModeSelector'
 
 function App() {
+  const [modeSelected, setModeSelected] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [data, setData] = useState([])
   const [sortDescField, setSortDescField] = useState(null)
-  const [rowDetails, setRowDetails] = useState(null)
+  const [rowDetails, setRowDetails] = useState()
 
-  const fetchData = async () => {
+  const fetchData = async (url) => {
     try {
       setIsLoading(true)
-      const res = await fetch('http://www.filltext.com/?rows=32&id={number|1000}&firstName={firstName}&lastName={lastName}&email={email}&phone={phone|(xxx)xxx-xx-xx}&address={addressObject}&description={lorem|32}')
-      setIsLoading(false)
+      const res = await fetch(url)
       const data = await res.json()
       setData(data)
-
-    } catch (err) {
-      setIsLoading(false)
+    }
+    catch (err) {
       console.log(err);
     }
+    finally {
+      setIsLoading(false)
+    }
   }
-
-  useEffect(() => {
-    fetchData()
-  }, [])
 
   const sortData = sortId => {
     const sortedData = [...data].sort((a, b) =>
@@ -39,29 +38,36 @@ function App() {
     setData(sortedData)
   }
 
-  const onSortHandler = e => {
+  const sortHandler = e => {
     const sortId = e.target.getAttribute('sort')
     sortId && sortData(sortId)
   }
 
-  const onRowSelectHandler = rowData => {
+  const rowSelectHandler = rowData => {
     setRowDetails(rowData)
+  }
+
+  const modeSelectedHandler = url => {
+    setModeSelected(true)
+    fetchData(url)
   }
 
   return (
     <div className="container">
 
-      { isLoading
-        ? <Loader />
+      { !modeSelected
+        ? <ModeSelector onSelect={ modeSelectedHandler } />
         : (
           <Table
-            onSort={ onSortHandler }
-            onRowSelect={ onRowSelectHandler }
+            onSort={ sortHandler }
+            onRowSelect={ rowSelectHandler }
             data={ data } />
         )
       }
 
-      { !isLoading && rowDetails && <Details data={ rowDetails } /> }
+      { isLoading && <Loader /> }
+
+      { rowDetails && <Details data={ rowDetails } /> }
 
     </div>
   )

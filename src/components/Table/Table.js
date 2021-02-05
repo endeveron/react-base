@@ -17,7 +17,8 @@ const Table = props => {
       </thead>
       <tbody>
         { props.data.map(i => (
-          <tr key={ i.id + i.firstName } onClick={ props.onRowSelect.bind(null, i) }>
+          // don't pass an event argument (e) to bind a custom property
+          <tr key={ i.id + i.firstName } onClick={ () => props.onRowSelect(i) }>
             <td>{ i.id }</td>
             <td>{ i.firstName }</td>
             <td>{ i.lastName }</td>
