@@ -1,0 +1,10 @@
+.details {
+  position: sticky;
+  bottom: 0;
+  padding: 32px 0;
+  background-color: rgba(255, 255, 255, 0.85);
+}
+
+.desc {
+  width: 100%;
+}

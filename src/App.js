@@ -2,11 +2,13 @@ import React, { useEffect, useState } from 'react'
 
 import Loader from './shared/components/Loader/Loader'
 import Table from './components/Table/Table'
+import Details from './components/Details/Details'
 
 function App() {
   const [isLoading, setIsLoading] = useState(false)
   const [data, setData] = useState([])
   const [sortDescField, setSortDescField] = useState(null)
+  const [rowDetails, setRowDetails] = useState(null)
 
   const fetchData = async () => {
     try {
@@ -37,12 +39,13 @@ function App() {
     setData(sortedData)
   }
 
-  const tableClickHandler = e => {
+  const onSortHandler = e => {
     const sortId = e.target.getAttribute('sort')
     sortId && sortData(sortId)
+  }
 
-    // TODO: NEXT STEP
-
+  const onRowSelectHandler = rowData => {
+    setRowDetails(rowData)
   }
 
   return (
@@ -50,10 +53,15 @@ function App() {
 
       { isLoading
         ? <Loader />
-        : <Table
-          onClick={ tableClickHandler }
-          data={ data } />
+        : (
+          <Table
+            onSort={ onSortHandler }
+            onRowSelect={ onRowSelectHandler }
+            data={ data } />
+        )
       }
+
+      { !isLoading && rowDetails && <Details data={ rowDetails } /> }
 
     </div>
   )

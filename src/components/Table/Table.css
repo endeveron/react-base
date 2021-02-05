@@ -1,3 +1,7 @@
-th:hover {
+table {
   cursor: default;
+}
+
+tr:hover {
+  background-color: rgba(0, 0, 0, 0.02);
 }

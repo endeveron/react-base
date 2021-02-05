@@ -5,9 +5,9 @@ import './Table.css'
 const Table = props => {
 
   return (
-    <table className="table" onClick={ props.onClick }>
+    <table className="table">
       <thead>
-        <tr>
+        <tr onClick={ props.onSort }>
           <th sort="id">ID</th>
           <th sort="firstName">FirstName</th>
           <th sort="lastName">LastName</th>
@@ -17,7 +17,7 @@ const Table = props => {
       </thead>
       <tbody>
         { props.data.map(i => (
-          <tr key={ i.id + i.firstName }>
+          <tr key={ i.id + i.firstName } onClick={ props.onRowSelect.bind(null, i) }>
             <td>{ i.id }</td>
             <td>{ i.firstName }</td>
             <td>{ i.lastName }</td>
