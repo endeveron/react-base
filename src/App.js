@@ -1,4 +1,7 @@
 import React, { useState } from 'react'
+import ReactPaginate from 'react-paginate'
+
+import './App.css'
 
 import Loader from './components/Loader/Loader'
 import Table from './components/Table/Table'
@@ -6,11 +9,14 @@ import Details from './components/Details/Details'
 import ModeSelector from './components/ModeSelector/ModeSelector'
 
 function App() {
+  const PAGE_SIZE = 10
+
   const [modeSelected, setModeSelected] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [data, setData] = useState([])
   const [sortDescField, setSortDescField] = useState(null)
   const [rowDetails, setRowDetails] = useState()
+  const [currentPage, setCurrentPage] = useState({ selected: 0 })
 
   const fetchData = async (url) => {
     try {
@@ -52,8 +58,43 @@ function App() {
     fetchData(url)
   }
 
+  const pageClickHandler = page => {
+    setCurrentPage(page)
+  }
+
+  const chunk = (arr, chunk) => {
+    const res = []
+    for (let i = 0, l = arr.length;i < l;i += chunk) {
+      res.push(arr.slice(i, i + chunk))
+    }
+    return res
+  }
+
+  const dispData = chunk(data, PAGE_SIZE)[currentPage.selected]
+
   return (
-    <div className="container">
+    <div className="container py-2">
+
+      { !!data.length && data.length > PAGE_SIZE && <div className="py-3">
+        <ReactPaginate
+          previousLabel={ 'previous' }
+          nextLabel={ 'next' }
+          breakLabel={ ' . . . ' }
+          breakClassName={ 'break-me' }
+          pageCount={ Math.ceil(data.length / PAGE_SIZE) || 1 }
+          marginPagesDisplayed={ 2 }
+          pageRangeDisplayed={ 5 }
+          onPageChange={ pageClickHandler }
+          // forcePage={ currentPage }
+          containerClassName={ 'pagination' }
+          activeClassName={ 'active' }
+          pageClassName={ 'page-item' }
+          pageLinkClassName={ 'page-link' }
+          previousClassName={ 'page-item' }
+          previousLinkClassName={ 'page-link' }
+          nextClassName={ 'page-item' }
+          nextLinkClassName={ 'page-link' } />
+      </div> }
 
       { !modeSelected
         ? <ModeSelector onSelect={ modeSelectedHandler } />
@@ -61,7 +102,7 @@ function App() {
           <Table
             onSort={ sortHandler }
             onRowSelect={ rowSelectHandler }
-            data={ data } />
+            data={ dispData } />
         )
       }
 
