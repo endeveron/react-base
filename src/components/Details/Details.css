@@ -1,10 +1,38 @@
-.details {
+.sticky {
   position: sticky;
   bottom: 0;
-  padding: 32px 0;
-  background-color: rgba(255, 255, 255, 0.85);
+  z-index: 3;
+}
+
+.details {
+  display: flex;
+  flex-direction: row;
+  gap: 16px;
+  padding: 16px;
+  color: white;
+  background-color: rgb(54, 54, 54);
+}
+
+.left {
+  width: 40%;
+}
+
+.right {
+  width: 60%;
+}
+
+.details span {
+  width: 100px;
+  display: inline-block;
+  color: rgba(255, 255, 255, 0.568);
 }
 
 .desc {
+  border-color: rgba(0, 0, 0, 0);
+  color: white;
   width: 100%;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  background: transparent;
 }

@@ -7,6 +7,7 @@ import Loader from './components/Loader/Loader'
 import Table from './components/Table/Table'
 import Details from './components/Details/Details'
 import ModeSelector from './components/ModeSelector/ModeSelector'
+import TableSearch from './components/TableSearch/TableSearch'
 
 function App() {
   const PAGE_SIZE = 10
@@ -17,6 +18,7 @@ function App() {
   const [sortDescField, setSortDescField] = useState(null)
   const [rowDetails, setRowDetails] = useState()
   const [currentPage, setCurrentPage] = useState({ selected: 0 })
+  const [search, setSearch] = useState()
 
   const fetchData = async (url) => {
     try {
@@ -62,6 +64,11 @@ function App() {
     setCurrentPage(page)
   }
 
+  const searchHandler = v => {
+    setSearch(v)
+    setCurrentPage({ selected: 0 })
+  }
+
   const chunk = (arr, chunk) => {
     const res = []
     for (let i = 0, l = arr.length;i < l;i += chunk) {
@@ -70,39 +77,53 @@ function App() {
     return res
   }
 
-  const dispData = chunk(data, PAGE_SIZE)[currentPage.selected]
+  const getFilteredData = () => {
+    if (!search) return data
+    const _check = (item, name) => item[name].toLowerCase().includes(search.toLowerCase())
+    return data.filter(item =>
+      _check(item, 'firstName') ||
+      _check(item, 'lastName') ||
+      _check(item, 'email')
+    )
+  }
+
+  const filteredData = getFilteredData()
+
+  const dispData = chunk(filteredData, PAGE_SIZE)[currentPage.selected]
 
   return (
-    <div className="container py-2">
-
-      { !!data.length && data.length > PAGE_SIZE && <div className="py-3">
-        <ReactPaginate
-          previousLabel={ 'previous' }
-          nextLabel={ 'next' }
-          breakLabel={ ' . . . ' }
-          breakClassName={ 'break-me' }
-          pageCount={ Math.ceil(data.length / PAGE_SIZE) || 1 }
-          marginPagesDisplayed={ 2 }
-          pageRangeDisplayed={ 5 }
-          onPageChange={ pageClickHandler }
-          // forcePage={ currentPage }
-          containerClassName={ 'pagination' }
-          activeClassName={ 'active' }
-          pageClassName={ 'page-item' }
-          pageLinkClassName={ 'page-link' }
-          previousClassName={ 'page-item' }
-          previousLinkClassName={ 'page-link' }
-          nextClassName={ 'page-item' }
-          nextLinkClassName={ 'page-link' } />
-      </div> }
+    <div className="container">
 
       { !modeSelected
         ? <ModeSelector onSelect={ modeSelectedHandler } />
         : (
-          <Table
-            onSort={ sortHandler }
-            onRowSelect={ rowSelectHandler }
-            data={ dispData } />
+          <>
+            <TableSearch onSearch={ searchHandler } />
+            <Table
+              onSort={ sortHandler }
+              onRowSelect={ rowSelectHandler }
+              data={ dispData } />
+
+            { !!data.length && data.length > PAGE_SIZE && <ReactPaginate
+              previousLabel={ 'previous' }
+              nextLabel={ 'next' }
+              breakLabel={ ' . . . ' }
+              breakClassName={ 'break-me' }
+              pageCount={ Math.ceil(filteredData.length / PAGE_SIZE) || 1 }
+              marginPagesDisplayed={ 2 }
+              pageRangeDisplayed={ 5 }
+              onPageChange={ pageClickHandler }
+              forcePage={ currentPage.selected }
+              containerClassName={ 'pagination py-2' }
+              activeClassName={ 'active' }
+              pageClassName={ 'page-item' }
+              pageLinkClassName={ 'page-link' }
+              previousClassName={ 'page-item' }
+              previousLinkClassName={ 'page-link' }
+              nextClassName={ 'page-item' }
+              nextLinkClassName={ 'page-link' } />
+            }
+          </>
         )
       }
 
